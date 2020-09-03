@@ -7,7 +7,7 @@ import json
 #accountinventory|accountwallet|commercedelivery|commerce/transactions|commerce/prices|commerce/listings
 
 class GW2Alarm:
-    #"E266A2C1-5D3F-124F-A518-340D555309A77F9EEF41-3882-4964-A367-867C698225A6"
+    #"E266A2C1-5D3F-124F-A518-340D555309A77F9EEF41-3882-4964-A367-867C698225A6" Test API
     def __init__(self, pContoller: object = None, pAPI: str = None):
         self.API = pAPI
         self.controller = pContoller

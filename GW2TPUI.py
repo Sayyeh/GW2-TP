@@ -79,7 +79,7 @@ class GW2GUI:
         self.boxInfo.place(x =  140, y = 166)
 
     def createAPI(self): #API übertrangen und WIdgets entsperren
-        self.controller.getTP().setAPI(self.apiEntry.get())
+        self.controller.cSetAPI(self.apiEntry.get())
 
         if len(self.apiEntry.get()) != 0:
             self.apiEntry.delete(0, "end")
@@ -113,7 +113,7 @@ class GW2GUI:
         if len(item) != 0 and self.goldEntry.get() and self.silberEntry.get() and self.bronzeEntry.get():
             self.tpItem.insert("end", item)
             self.tpEntry.delete(0, "end")
-            self.itemUIP[item] = self.controller.getTP().ConvertGSCtoC(int(self.goldEntry.get()), int(self.silberEntry.get()), int(self.bronzeEntry.get()))
+            self.itemUIP[item] = self.controller.cConvertGtoC(int(self.goldEntry.get()), int(self.silberEntry.get()), int(self.bronzeEntry.get()))
             if self.v.get() == 1:
                 self.itemUIV[item] = "Buy"
             else:
@@ -122,7 +122,7 @@ class GW2GUI:
     def boxUpdate(self): #Item + Preis + Art der Order anzeigen
         try:
             if self.tpItem.curselection():
-                currency = self.controller.getTP().ConvertCtoGSC(self.itemUIP[self.tpItem.get((self.tpItem.curselection()))])
+                currency = self.controller.cConvertCtoG(self.itemUIP[self.tpItem.get((self.tpItem.curselection()))])
                 order = self.itemUIV[self.tpItem.get((self.tpItem.curselection()))]
                 self.b.set("{} Gold {} Silber {} Bronze \n{}".format(currency[0], currency[1], currency[2], order) + "order")
         except ValueError and KeyError:
