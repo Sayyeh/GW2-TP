@@ -17,13 +17,13 @@ class Controller:
         return self.gui
 
     def cConvertCtoG(self, pCoin: int):
-        self.tp.ConvertCtoGSC(pCoin)
+        return self.tp.ConvertCtoGSC(pCoin)
 
     def cConvertGtoC(self, pGold: int, pSilber: int, pBronze: int):
-        self.tp.ConvertGSCtoC(pGold, pSilber, pBronze)
+        return self.tp.ConvertGSCtoC(pGold, pSilber, pBronze)
 
     def cSetAPI(self, pAPI):
-        self.tp.setAPI(pAPI)
+        return self.tp.setAPI(pAPI)
 
 a = Controller()
 a.getGUI().main.mainloop()
