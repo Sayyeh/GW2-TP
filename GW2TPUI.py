@@ -104,7 +104,7 @@ class GW2GUI:
             self.v.set(1)
             self.updateOption["values"] = ["1 min", "2 min", "3 min", "4 min", "5 min"]
             self.boxUpdate()
-            #self.priceUpdate()
+            self.priceUpdate()
 
     def removeItem(self): #Item aus der Listbox entfernen
         if self.tpItem.curselection():
@@ -142,7 +142,7 @@ class GW2GUI:
 
     def priceUpdate(self):
         for i in self.itemUIP:
-            if self.itemUIP[i] <= self.controller.cGetPreise(self.itemUIP[i], self.itemUIV[i]):
+            if self.itemUIP[i] >= self.controller.cGetPreise(i, self.itemUIV[i]):
                 print("hello")
 
         self.main.after(1000, self.priceUpdate)

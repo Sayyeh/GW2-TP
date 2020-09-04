@@ -26,7 +26,7 @@ class Controller:
         return self.tp.setAPI(pAPI)
 
     def cGetPreise(self, pItem: str, pVersion: str):
-        pVersion = pVersion.lower()
+        pVersion = pVersion.lower() + "s"
         return self.tp.getPreis(pItem, pVersion)
 
 a = Controller()

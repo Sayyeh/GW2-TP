@@ -33,24 +33,20 @@ class GW2Alarm:
     @staticmethod
     def ConvertCtoGSC(pCoin: int): #Umwandeln von Coins in Gold, SIlber Bronze
         Gold = pCoin / 10000
-        Silber = str(Gold)[2:4]
 
-        if len(str(pCoin)) > 5 and len(str(Gold)[len(str(pCoin)) - 3:len(str(pCoin)) - 1]) == 1:
+        if len(str(Gold)[len(str(pCoin)) - 3:len(str(pCoin)) - 1]) == 1:
             Silber = str(Gold)[len(str(pCoin)) - 3:len(str(pCoin)) - 1] + "0"
-        elif len(str(pCoin)) > 5:
+        else:
             Silber = str(Gold)[len(str(pCoin)) - 3:len(str(pCoin)) - 1]
-        if len(str(Gold)[4:6]) == 1 and len(str(pCoin)) <= 5:
-            Bronze = str(Gold)[4:6] + "0"
-        elif len(str(Gold)[4:6]) != 1 and len(str(pCoin)) <= 5:
-            Bronze = str(Gold)[4:6]
-        elif len(str(Gold)[len(str(pCoin)) - 1:len(str(pCoin)) + 1]) == 1 and len(str(pCoin)) > 5:
+
+        if len(str(Gold)[len(str(pCoin)) - 1:len(str(pCoin)) + 1]) == 1:
             Bronze = str(Gold)[len(str(pCoin)) - 1:len(str(pCoin)) + 1] + "0"
+        elif str(Gold)[len(str(pCoin)) - 1:len(str(pCoin)) + 1] == "":
+            Bronze = "0"
         else:
             Bronze = str(Gold)[len(str(pCoin)) - 1:len(str(pCoin)) + 1]
 
-        if Bronze == "":
-            Bronze = "0"
-        print(Gold, Silber, Bronze)
+        #print(Gold, Silber, Bronze)
 
         return int(float(Gold)), int(float(Silber)), int(float(Bronze))
 
@@ -87,9 +83,9 @@ class GW2Alarm:
     def getPreis(self, pItem: str, pVersion: str):
         # Hole buy und sell Preise der überwachten Items
 
-        bPreis = self.client.commerceprices.get(id=self.itemID[pItem])[pVersion]["unit_price"]
+        bPreis = self.client.commerceprices.get(id = self.getId(pItem))
 
-        return bPreis
+        return bPreis[pVersion]["unit_price"]
 
     def getClient(self):
         return self.client
@@ -113,6 +109,4 @@ if __name__ == "__main__":
     a.setItemL("+15 Agony Infusion", 1)
 
     print(a.getItemLID())
-
-    print(a.getbuyPreis())
-    print(a.getsellPreis())
+    b = a.client.commerceprices.get(id = a.getId("Mystic Coin"))
