@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 
 class GW2GUI:
 
@@ -18,6 +19,7 @@ class GW2GUI:
         self.imgBronze = tk.PhotoImage(file = "Images/Copper_coin.png")
         self.v = tk.IntVar()
         self.b = tk.StringVar()
+        self.u = tk.StringVar()
 
         self.apiButton = tk.Button(self.main, text = "API-Key eingeben", font = ("Verdanan", 10, "bold"), bg="#1c1d1c", fg="#EEE9E9",
                                    activeforeground = "#ce480f", activebackground = "#1c1d1c", relief = "flat", bd = 0, state = "disabled",
@@ -78,6 +80,13 @@ class GW2GUI:
         self.boxInfo = tk.Label(self.main, textvariable = self.b, font = ("Verdanan", 10, "bold"), bg="#383a39", fg="#EEE9E9")
         self.boxInfo.place(x =  140, y = 166)
 
+        self.updateOption = ttk.Combobox(self.main, textvariable = self.u, state = "disabled")
+        self.updateOption.place(x = 0, y = 300)
+        self.updateOption.bind("<Key>", lambda e: "break")
+
+        self.updateLabel = tk.Label(self.main, text = "Wie oft soll geupdated \nwerden?", font = ("Verdanan", 9, "bold"), bg="#383a39", fg="#EEE9E9")
+        self.updateLabel.place(x = 0, y = 250)
+
     def createAPI(self): #API übertrangen und WIdgets entsperren
         self.controller.cSetAPI(self.apiEntry.get())
 
@@ -86,15 +95,16 @@ class GW2GUI:
 
             self.widgets = [self.apiChange, self.tpItem, self.tpButton, self.tpEntry, self.goldEntry, self.goldT,
                             self.silberEntry, self.silberT, self.bronzeEntry, self.bronzeT, self.buyRadio,
-                            self.sellRadio, self.tpRemove]
+                            self.sellRadio, self.tpRemove, self.updateOption]
 
             self.apiEntry.config(state = "disabled")
             self.apiButton.config(state = "disabled")
             for i in self.widgets:
                 i.config(state = "normal")
             self.v.set(1)
-
+            self.updateOption["values"] = ["1 min", "2 min", "3 min", "4 min", "5 min"]
             self.boxUpdate()
+            #self.priceUpdate()
 
     def removeItem(self): #Item aus der Listbox entfernen
         if self.tpItem.curselection():
@@ -129,5 +139,12 @@ class GW2GUI:
             pass
 
         self.main.after(500, self.boxUpdate)
+
+    def priceUpdate(self):
+        for i in self.itemUIP:
+            if self.itemUIP[i] <= self.controller.cGetPreise(self.itemUIP[i], self.itemUIV[i]):
+                print("hello")
+
+        self.main.after(1000, self.priceUpdate)
 
 

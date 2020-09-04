@@ -35,7 +35,9 @@ class GW2Alarm:
         Gold = pCoin / 10000
         Silber = str(Gold)[2:4]
 
-        if len(str(pCoin)) > 5:
+        if len(str(pCoin)) > 5 and len(str(Gold)[len(str(pCoin)) - 3:len(str(pCoin)) - 1]) == 1:
+            Silber = str(Gold)[len(str(pCoin)) - 3:len(str(pCoin)) - 1] + "0"
+        elif len(str(pCoin)) > 5:
             Silber = str(Gold)[len(str(pCoin)) - 3:len(str(pCoin)) - 1]
         if len(str(Gold)[4:6]) == 1 and len(str(pCoin)) <= 5:
             Bronze = str(Gold)[4:6] + "0"
@@ -46,8 +48,9 @@ class GW2Alarm:
         else:
             Bronze = str(Gold)[len(str(pCoin)) - 1:len(str(pCoin)) + 1]
 
-        #print(Gold, Silber, Bronze)
-        #print(len(str(pCoin)))
+        if Bronze == "":
+            Bronze = "0"
+        print(Gold, Silber, Bronze)
 
         return int(float(Gold)), int(float(Silber)), int(float(Bronze))
 
@@ -81,25 +84,12 @@ class GW2Alarm:
 
         return itemID
 
-    def getbuyPreis(self): #Hole buyPreise der überwachten Items
-        bPreis = {}
+    def getPreis(self, pItem: str, pVersion: str):
+        # Hole buy und sell Preise der überwachten Items
 
-        for i in self.itemL:
-            bPreis[i] = self.client.commerceprices.get(id=self.itemID[i])["buys"]["unit_price"]
+        bPreis = self.client.commerceprices.get(id=self.itemID[pItem])[pVersion]["unit_price"]
 
         return bPreis
-
-    def getsellPreis(self, pItem): #Hole sellPreise der überwachten Items
-        sPreis = self.client.commerceprices.get(id=self.itemID[pItem])["sells"]["unit_price"]
-
-        return sPreis
-
-    def priceMatch(self, pItemP, pItemV):
-        for i in pItemP:
-            if pItemV[i] == "Buy" and pItemP[i] == self.getbuyPreis():
-                self.winNoti(i, pItemP[i])
-            elif pItemV[i] == "Sell" and pItemP[i] == self.getsellPreis():
-                pass
 
     def getClient(self):
         return self.client
