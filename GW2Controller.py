@@ -29,5 +29,11 @@ class Controller:
         pVersion = pVersion.lower() + "s"
         return self.tp.getPreis(pItem, pVersion)
 
+    def cSetItemL(self, pItem: str):
+        self.tp.setItemL(pItem)
+
+    def cRemoveItemL(self, pItem: str):
+        self.tp.removeItemL(pItem)
+
 a = Controller()
 a.getGUI().main.mainloop()

@@ -13,7 +13,6 @@ class GW2Alarm:
         self.controller = pContoller
         self.toast = ToastNotifier() #Win10 Notification
         self.client = GuildWars2Client(api_key = self.API)  # Mit der GW2 API verbinden
-        self.itemL = {}
         self.itemID = {}
         self.noti = ToastNotifier()
 
@@ -26,27 +25,39 @@ class GW2Alarm:
     def getItemLID(self):
         return self.itemID
 
-    def setItemL(self, pItem: str, pCoin: int): #Füge Item der Überwachungsliste hinzu oder verändere es
-        self.itemL[pItem] = pCoin
+    def setItemL(self, pItem: str): #Füge Item der Überwachungsliste hinzu oder verändere es
         self.itemID[pItem] = self.getId(pItem)
 
+    def removeItemL(self, pItem: str):
+        self.itemID.pop(pItem, None)
+
     @staticmethod
-    def ConvertCtoGSC(pCoin: int): #Umwandeln von Coins in Gold, SIlber Bronze
+    def ConvertCtoGSC(pCoin: int): #Umwandeln von Coins in Gold, Silber Bronze (Nicht die beste und effizienteste Variante, aber psscht)
         Gold = pCoin / 10000
 
-        if len(str(Gold)[len(str(pCoin)) - 3:len(str(pCoin)) - 1]) == 1:
+        if len(str(Gold)[len(str(pCoin)) - 3:len(str(pCoin)) - 1]) == 1 and len(str(pCoin)) > 4:
             Silber = str(Gold)[len(str(pCoin)) - 3:len(str(pCoin)) - 1] + "0"
-        else:
+        elif len(str(Gold)[len(str(pCoin)) - 3:len(str(pCoin)) - 1]) > 1 and len(str(pCoin)) > 4:
             Silber = str(Gold)[len(str(pCoin)) - 3:len(str(pCoin)) - 1]
+        else:
+            Silber = str(pCoin)[0:len(str(pCoin)) - 2]
 
-        if len(str(Gold)[len(str(pCoin)) - 1:len(str(pCoin)) + 1]) == 1:
+        if len(str(Gold)[len(str(pCoin)) - 1:len(str(pCoin)) + 1]) == 1 and len(str(pCoin)) > 4:
             Bronze = str(Gold)[len(str(pCoin)) - 1:len(str(pCoin)) + 1] + "0"
-        elif str(Gold)[len(str(pCoin)) - 1:len(str(pCoin)) + 1] == "":
+        elif len(str(Gold)[len(str(pCoin)) - 1:len(str(pCoin)) + 1]) > 1 and len(str(pCoin)) > 4:
+            Bronze = str(Gold)[len(str(pCoin)) - 1:len(str(pCoin)) + 1]
+        elif not str(Gold)[len(str(pCoin)) - 1:len(str(pCoin)) + 1] or not str(Gold)[2:len(str(pCoin))]:
             Bronze = "0"
         else:
-            Bronze = str(Gold)[len(str(pCoin)) - 1:len(str(pCoin)) + 1]
+            Bronze = str(pCoin)[len(str(pCoin)) - 2:len(str(pCoin))]
 
-        #print(Gold, Silber, Bronze)
+        if len(str(pCoin)) <= 2:
+            Gold = "0"
+            Silber = "0"
+            Bronze = pCoin
+
+        print(pCoin)
+        print(Gold, Silber, Bronze)
 
         return int(float(Gold)), int(float(Silber)), int(float(Bronze))
 
@@ -83,7 +94,7 @@ class GW2Alarm:
     def getPreis(self, pItem: str, pVersion: str):
         # Hole buy und sell Preise der überwachten Items
 
-        bPreis = self.client.commerceprices.get(id = self.getId(pItem))
+        bPreis = self.client.commerceprices.get(id = self.itemID[pItem])
 
         return bPreis[pVersion]["unit_price"]
 
@@ -101,8 +112,6 @@ class GW2Alarm:
 if __name__ == "__main__":
     a = GW2Alarm("E266A2C1-5D3F-124F-A518-340D555309A77F9EEF41-3882-4964-A367-867C698225A6")
     print(a.getId("Mystic Coin"))
-    #print(a.getClient().commerceprices.get(id=a.getId("Silk Patch")))
-    #print(a.ConvertCtoGSC(a.getClient().commerceprices.get(id=a.getId("Silk Patch"))["buys"]["unit_price"]))
     a.setItemL("Mystic Coin", 1)
     a.setItemL("Elonian Greatblade", 1)
     a.setItemL("+1 Agony Infusion", 1)

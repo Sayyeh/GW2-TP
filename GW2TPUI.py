@@ -23,7 +23,7 @@ class GW2GUI:
 
         self.apiButton = tk.Button(self.main, text = "API-Key eingeben", font = ("Verdanan", 10, "bold"), bg="#1c1d1c", fg="#EEE9E9",
                                    activeforeground = "#ce480f", activebackground = "#1c1d1c", relief = "flat", bd = 0, state = "disabled",
-                                   disabledforeground= "#494a49", command = self.createAPI)
+                                   disabledforeground= "#494a49", command = self.startAPI)
         self.apiButton.place(x = 0, y = 0)
 
         self.apiEntry = tk.Entry(self.main, bg = "#1c1d1c", fg = "#EEE9E9", width = 75, bd = 0, state = "disabled", disabledbackground = "#494a49", disabledforeground= "#EEE9E9")
@@ -81,13 +81,13 @@ class GW2GUI:
         self.boxInfo.place(x =  140, y = 166)
 
         self.updateOption = ttk.Combobox(self.main, textvariable = self.u, state = "disabled")
-        self.updateOption.place(x = 0, y = 300)
+        self.updateOption.place(x = 0, y = 233)
         self.updateOption.bind("<Key>", lambda e: "break")
 
         self.updateLabel = tk.Label(self.main, text = "Wie oft soll geupdated \nwerden?", font = ("Verdanan", 9, "bold"), bg="#383a39", fg="#EEE9E9")
-        self.updateLabel.place(x = 0, y = 250)
+        self.updateLabel.place(x = 0, y = 255)
 
-    def createAPI(self): #API übertrangen und WIdgets entsperren
+    def startAPI(self): #API übertrangen und WIdgets entsperren
         self.controller.cSetAPI(self.apiEntry.get())
 
         if len(self.apiEntry.get()) != 0:
@@ -103,8 +103,9 @@ class GW2GUI:
                 i.config(state = "normal")
             self.v.set(1)
             self.updateOption["values"] = ["1 min", "2 min", "3 min", "4 min", "5 min"]
+            self.u.set("5 min")
             self.boxUpdate()
-            self.priceUpdate()
+            #self.priceUpdate()
 
     def removeItem(self): #Item aus der Listbox entfernen
         if self.tpItem.curselection():
@@ -112,6 +113,7 @@ class GW2GUI:
             self.itemUIP.pop(item, None)
             self.itemUIV.pop(item, None)
             self.tpItem.delete(self.tpItem.curselection())
+            self.controller.cRemoveItemL(item)
 
     def changeAPIstate(self): #API-Eingabefeld entsperren
         self.apiEntry.config(state="normal")
@@ -124,6 +126,7 @@ class GW2GUI:
             self.tpItem.insert("end", item)
             self.tpEntry.delete(0, "end")
             self.itemUIP[item] = self.controller.cConvertGtoC(int(self.goldEntry.get()), int(self.silberEntry.get()), int(self.bronzeEntry.get()))
+            self.controller.cSetItemL(item)
             if self.v.get() == 1:
                 self.itemUIV[item] = "Buy"
             else:
@@ -142,8 +145,11 @@ class GW2GUI:
 
     def priceUpdate(self):
         for i in self.itemUIP:
-            if self.itemUIP[i] >= self.controller.cGetPreise(i, self.itemUIV[i]):
-                print("hello")
+            try:
+                if self.itemUIP[i] >= self.controller.cGetPreise(i, self.itemUIV[i]):
+                    print("hello")
+            except TypeError:
+                print("TypeError")
 
         self.main.after(1000, self.priceUpdate)
 
