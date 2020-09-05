@@ -47,8 +47,8 @@ class Controller:
     def cReadItem(self):
         return self.tp.readData()
 
-    def cNoti(self, pItem, pPreis):
-        self.tp.winNoti(pItem, pPreis)
+    def cNoti(self, pItem, pPreis, pVersion):
+        self.tp.winNoti(pItem, pPreis, pVersion)
 
 a = Controller()
 a.getGUI().main.mainloop()
