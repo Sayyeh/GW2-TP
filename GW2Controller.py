@@ -41,6 +41,9 @@ class Controller:
     def cGetItemV(self):
         return self.gui.getItemLV()
 
+    def cGetID(self, pItem):
+        return self.tp.getId(pItem)
+
     def cSaveItem(self, pItemP, pItemV):
         self.tp.saveData(pItemP, pItemV)
 

@@ -111,7 +111,7 @@ class GW2Alarm:
 
     def winNoti(self, pItem, pPreis, pVersion):
         commerce = self.ConvertCtoGSC(int(pPreis))
-        self.noti.show_toast("GW2 Price Alarm", "Item {} ist über Preis {} Gold {} Silber {} Copper erreicht \n{}".format(pItem, commerce[0], commerce[1], commerce[2], pVersion),
+        self.noti.show_toast("GW2 Price Alarm", "Item {} ist über Preis {} Gold {} Silber {} Copper \n{} Order".format(pItem, commerce[0], commerce[1], commerce[2], pVersion),
                              duration=20, icon_path = "images\icon.ico", threaded = True)
 
 if __name__ == "__main__": #Zum Testen

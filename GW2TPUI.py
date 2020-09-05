@@ -128,7 +128,8 @@ class GW2GUI:
             self.updateOption["values"] = ["1 min", "2 min", "3 min", "4 min", "5 min"]
             self.u.set("1 min")
             self.boxUpdate()
-            self.readItem()
+            if len(self.itemUIP) == 0:
+                self.readItem()
 
     def removeItem(self): #Item aus der Listbox entfernen
         if self.tpItem.curselection():
@@ -151,9 +152,8 @@ class GW2GUI:
     def addItem(self): #Item der Listbox hinzufügen
         item = self.tpEntry.get()
 
-        if len(item) != 0 and self.goldEntry.get() and self.silberEntry.get() and self.bronzeEntry.get():
+        if len(item) != 0 and self.goldEntry.get() and self.silberEntry.get() and self.bronzeEntry.get() and self.controller.cGetID(item) is not None:
             self.tpItem.insert("end", item)
-            self.tpEntry.delete(0, "end")
             self.itemUIP[item] = self.controller.cConvertGtoC(int(self.goldEntry.get()), int(self.silberEntry.get()), int(self.bronzeEntry.get()))
             self.controller.cSetItemL(item)
             if self.v.get() == 1:
@@ -161,12 +161,14 @@ class GW2GUI:
             else:
                 self.itemUIV[item] = "Sell"
 
+        self.tpEntry.delete(0, "end")
+
     def boxUpdate(self): #Item + Preis + Art der Order anzeigen
         try:
             if self.tpItem.curselection():
                 currency = self.controller.cConvertCtoG(self.itemUIP[self.tpItem.get((self.tpItem.curselection()))])
                 order = self.itemUIV[self.tpItem.get((self.tpItem.curselection()))]
-                self.b.set("{} Gold {} Silber {} Bronze \n{}".format(currency[0], currency[1], currency[2], order) + "order")
+                self.b.set("{} Gold {} Silber {} Bronze \n{}".format(currency[0], currency[1], currency[2], order) + " Order")
         except ValueError and KeyError:
             pass
 
@@ -175,7 +177,10 @@ class GW2GUI:
     def priceLoop(self, pIndex):
         time = self.updateOption.current() + 1
 
-        self.main.after(60000 * time, self.priceUpdate, pIndex + 1)
+        try:
+            self.main.after(int((60000 * time) / len(self.itemUIP)), self.priceUpdate, pIndex + 1)
+        except ZeroDivisionError:
+            self.main.after(60000 * time, self.priceUpdate, pIndex + 1)
 
     def priceUpdate(self, pIndex):
         if pIndex + 1 > len(self.itemUIP):
