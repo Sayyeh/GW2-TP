@@ -87,6 +87,29 @@ class GW2GUI:
         self.updateLabel = tk.Label(self.main, text = "Wie oft soll geupdated \nwerden?", font = ("Verdanan", 9, "bold"), bg="#383a39", fg="#EEE9E9")
         self.updateLabel.place(x = 0, y = 255)
 
+        self.saveButton = tk.Button(self.main, text = "Speichern", font = ("Verdanan", 10, "bold"), bg="#1c1d1c", fg="#EEE9E9",
+                                   activeforeground = "#ce480f", activebackground = "#1c1d1c", relief = "flat", bd = 0, state = "disabled",
+                                   disabledforeground= "#494a49", command = self.saveItem)
+        self.saveButton.place(x = 368, y = 104)
+
+        self.priceUpdate(0)
+
+    def readItem(self):
+        temp = self.controller.cReadItem()
+
+        if temp[0] and temp[1]:
+            for i in temp[0]:
+                self.addDataItem(i, temp[0][i], temp[1][i])
+
+    def saveItem(self):
+        self.controller.cSaveItem(self.itemUIP, self.itemUIV)
+
+    def getItemLP(self):
+        return self.itemUIP
+
+    def getItemLV(self):
+        return self.itemUIV
+
     def startAPI(self): #API übertrangen und WIdgets entsperren
         self.controller.cSetAPI(self.apiEntry.get())
 
@@ -95,7 +118,7 @@ class GW2GUI:
 
             self.widgets = [self.apiChange, self.tpItem, self.tpButton, self.tpEntry, self.goldEntry, self.goldT,
                             self.silberEntry, self.silberT, self.bronzeEntry, self.bronzeT, self.buyRadio,
-                            self.sellRadio, self.tpRemove, self.updateOption]
+                            self.sellRadio, self.tpRemove, self.updateOption, self.saveButton]
 
             self.apiEntry.config(state = "disabled")
             self.apiButton.config(state = "disabled")
@@ -103,9 +126,9 @@ class GW2GUI:
                 i.config(state = "normal")
             self.v.set(1)
             self.updateOption["values"] = ["1 min", "2 min", "3 min", "4 min", "5 min"]
-            self.u.set("5 min")
+            self.u.set("1 min")
             self.boxUpdate()
-            #self.priceUpdate()
+            self.readItem()
 
     def removeItem(self): #Item aus der Listbox entfernen
         if self.tpItem.curselection():
@@ -118,6 +141,12 @@ class GW2GUI:
     def changeAPIstate(self): #API-Eingabefeld entsperren
         self.apiEntry.config(state="normal")
         self.apiButton.config(state="normal")
+
+    def addDataItem(self, pItem, pPreis, pVersion):
+        self.tpItem.insert("end", pItem)
+        self.itemUIP[pItem] = pPreis
+        self.itemUIV[pItem] = pVersion
+        self.controller.cSetItemL(pItem)
 
     def addItem(self): #Item der Listbox hinzufügen
         item = self.tpEntry.get()
@@ -143,14 +172,21 @@ class GW2GUI:
 
         self.main.after(500, self.boxUpdate)
 
-    def priceUpdate(self):
-        for i in self.itemUIP:
-            try:
-                if self.itemUIP[i] >= self.controller.cGetPreise(i, self.itemUIV[i]):
-                    print("hello")
-            except TypeError:
-                print("TypeError")
+    def priceLoop(self, pIndex):
+        time = self.updateOption.current() + 1
 
-        self.main.after(1000, self.priceUpdate)
+        self.main.after(60000 * time, self.priceUpdate, pIndex + 1)
+
+    def priceUpdate(self, pIndex):
+        if pIndex + 1 > len(self.itemUIP):
+            pIndex = 0
+        try:
+            print(self.itemUIP[list(self.itemUIP)[pIndex]])
+            if pIndex + 1 <= len(self.itemUIP) and self.itemUIP[list(self.itemUIP)[pIndex]] >= self.controller.cGetPreise(list(self.itemUIP)[pIndex], self.itemUIV[list(self.itemUIV)[pIndex]]):
+                self.controller.cNoti(list(self.itemUIP)[pIndex], self.itemUIP[list(self.itemUIP)[pIndex]])
+        except TypeError and IndexError:
+            pass
+
+        self.main.after(1000, self.priceLoop, pIndex)
 
 

@@ -35,5 +35,20 @@ class Controller:
     def cRemoveItemL(self, pItem: str):
         self.tp.removeItemL(pItem)
 
+    def cGetItemP(self):
+        return self.gui.getItemLP()
+
+    def cGetItemV(self):
+        return self.gui.getItemLV()
+
+    def cSaveItem(self, pItemP, pItemV):
+        self.tp.saveData(pItemP, pItemV)
+
+    def cReadItem(self):
+        return self.tp.readData()
+
+    def cNoti(self, pItem, pPreis):
+        self.tp.winNoti(pItem, pPreis)
+
 a = Controller()
 a.getGUI().main.mainloop()

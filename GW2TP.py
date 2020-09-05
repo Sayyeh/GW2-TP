@@ -1,5 +1,6 @@
 from gw2api import GuildWars2Client
 from win10toast import ToastNotifier
+from GW2Json import GW2Json
 import json
 
 # print(client.commercedelivery.get())
@@ -15,12 +16,16 @@ class GW2Alarm:
         self.client = GuildWars2Client(api_key = self.API)  # Mit der GW2 API verbinden
         self.itemID = {}
         self.noti = ToastNotifier()
+        self.data = GW2Json()
+
+    def readData(self):
+        return self.data.jsonRead()
+
+    def saveData(self, pItemP, pItemV):
+        self.data.jsonCreate(pItemP, pItemV)
 
     def setAPI(self, pAPI:str):
         self.API = pAPI
-
-    def getItemL(self): #Return Liste mit allen überwachten Items
-        return self.itemL
 
     def getItemLID(self):
         return self.itemID
@@ -56,8 +61,8 @@ class GW2Alarm:
             Silber = "0"
             Bronze = pCoin
 
-        print(pCoin)
-        print(Gold, Silber, Bronze)
+        #print(pCoin)
+        #print(Gold, Silber, Bronze)
 
         return int(float(Gold)), int(float(Silber)), int(float(Bronze))
 
@@ -109,13 +114,13 @@ class GW2Alarm:
         self.noti.show_toast("GW2 Price Alarm", "Item {} hat Preis {} Gold {} Silber {} Copper erreicht".format(pItem, commerce[0], commerce[1], commerce[2]),
                              duration=20, icon_path = "images\icon.ico", threaded = True)
 
-if __name__ == "__main__":
+if __name__ == "__main__": #Zum Testen
     a = GW2Alarm("E266A2C1-5D3F-124F-A518-340D555309A77F9EEF41-3882-4964-A367-867C698225A6")
     print(a.getId("Mystic Coin"))
-    a.setItemL("Mystic Coin", 1)
-    a.setItemL("Elonian Greatblade", 1)
-    a.setItemL("+1 Agony Infusion", 1)
-    a.setItemL("+15 Agony Infusion", 1)
+    a.setItemL("Mystic Coin")
+    a.setItemL("Elonian Greatblade")
+    a.setItemL("+1 Agony Infusion")
+    a.setItemL("+15 Agony Infusion")
 
     print(a.getItemLID())
     b = a.client.commerceprices.get(id = a.getId("Mystic Coin"))
