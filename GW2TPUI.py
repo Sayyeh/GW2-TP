@@ -104,21 +104,15 @@ class GW2GUI:
 
         self.priceUpdate(0)
 
-    def readItem(self):
+    def readItem(self): #Lese Items aus dem Speicher
         temp = self.controller.cReadItem()
 
         if temp[0] and temp[1]:
             for i in temp[0]:
                 self.addDataItem(i, temp[0][i], temp[1][i], temp[2][i])
 
-    def saveItem(self):
+    def saveItem(self): #Speichere Items in den Spreicher
         self.controller.cSaveItem(self.itemUIP, self.itemUIV, self.itemUIG)
-
-    def getItemLP(self):
-        return self.itemUIP
-
-    def getItemLV(self):
-        return self.itemUIV
 
     def startAPI(self): #API übertrangen und WIdgets entsperren
         self.controller.cSetAPI(self.apiEntry.get())
@@ -129,18 +123,18 @@ class GW2GUI:
             self.widgets = [self.apiChange, self.tpItem, self.tpButton, self.tpEntry, self.goldEntry, self.goldT,
                             self.silberEntry, self.silberT, self.bronzeEntry, self.bronzeT, self.buyRadio,
                             self.sellRadio, self.tpRemove, self.updateOption, self.saveButton, self.biggerRadio,
-                            self.smallerRadio]
+                            self.smallerRadio] #Alle Widgets
 
             self.apiEntry.config(state = "disabled")
             self.apiButton.config(state = "disabled")
-            for i in self.widgets:
+            for i in self.widgets: #Widgets werden entsperrt
                 i.config(state = "normal")
             self.v.set(1)
             self.g.set(1)
             self.updateOption["values"] = ["1 min", "2 min", "3 min", "4 min", "5 min"]
             self.u.set("1 min")
             self.boxUpdate()
-            if len(self.itemUIP) == 0:
+            if len(self.itemUIP) == 0: #Wenn was im Speicher, lade ihn
                 self.readItem()
 
     def removeItem(self): #Item aus der Listbox entfernen
@@ -155,7 +149,7 @@ class GW2GUI:
         self.apiEntry.config(state="normal")
         self.apiButton.config(state="normal")
 
-    def addDataItem(self, pItem, pPreis, pVersion, pOperator):
+    def addDataItem(self, pItem, pPreis, pVersion, pOperator): #Item aus dem Speicher der GUI hinzufügen
         self.tpItem.insert("end", pItem)
         self.itemUIP[pItem] = pPreis
         self.itemUIV[pItem] = pVersion
@@ -186,7 +180,7 @@ class GW2GUI:
 
         self.main.after(500, self.boxUpdate)
 
-    def priceLoop(self, pIndex):
+    def priceLoop(self, pIndex): #ForLoop Alternative für priceUpdate()
         time = self.updateOption.current() + 1
 
         try:
@@ -194,7 +188,7 @@ class GW2GUI:
         except ZeroDivisionError:
             self.main.after(60000 * time, self.priceUpdate, pIndex + 1)
 
-    def priceUpdate(self, pIndex):
+    def priceUpdate(self, pIndex): #Get Preis und vergleiche ihn
         if pIndex + 1 > len(self.itemUIP):
             pIndex = 0
         try:
@@ -210,7 +204,7 @@ class GW2GUI:
 
         self.main.after(1000, self.priceLoop, pIndex)
 
-    def getMain(self):
+    def getMain(self): #Return main
         return self.main
 
 

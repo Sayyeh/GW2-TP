@@ -18,22 +18,22 @@ class GW2Alarm:
         self.noti = ToastNotifier()
         self.data = GW2Json()
 
-    def readData(self):
+    def readData(self): #Lese Items vom Speicher
         return self.data.jsonRead()
 
-    def saveData(self, pItemP, pItemV, pItemG):
+    def saveData(self, pItemP, pItemV, pItemG): #Schreibe Items in den Speicher
         self.data.jsonCreate(pItemP, pItemV, pItemG)
 
-    def setAPI(self, pAPI:str):
+    def setAPI(self, pAPI: str): #Setze den API-Key
         self.API = pAPI
 
-    def getItemLID(self):
+    def getItemLID(self): #Return Itemliste mit ItemIds
         return self.itemID
 
     def setItemL(self, pItem: str): #Füge Item der Überwachungsliste hinzu oder verändere es
         self.itemID[pItem] = self.getId(pItem)
 
-    def removeItemL(self, pItem: str):
+    def removeItemL(self, pItem: str): #Lösche Item aus der Liste
         self.itemID.pop(pItem, None)
 
     @staticmethod
@@ -103,13 +103,13 @@ class GW2Alarm:
 
         return bPreis[pVersion]["unit_price"]
 
-    def getClient(self):
+    def getClient(self): #Return self
         return self.client
 
-    def getDelivery(self):
+    def getDelivery(self): #Noch nicht von nutzen
         return self.client.commercedelivery.get()
 
-    def winNoti(self, pItem, pPreis, pVersion, pOperator):
+    def winNoti(self, pItem, pPreis, pVersion, pOperator): #Win10 Benachrichtigung mit extra Infos
         commerce = self.ConvertCtoGSC(int(pPreis))
         operator = "über" if pOperator == "Größer" else "unter"
         self.noti.show_toast("GW2 Price Alarm", "Item {} ist {} Preis {} Gold {} Silber {} Copper \n{} Order".format(pItem, operator, commerce[0], commerce[1], commerce[2], pVersion),

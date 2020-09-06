@@ -2,7 +2,7 @@ from GW2TP import GW2Alarm
 from GW2TPUI import GW2GUI
 
 class Controller:
-
+    #COntroller dient als Schnittstelle zwischen GUI und Rest
     def __init__(self):
         self.tp = GW2Alarm(self)
         self.gui = GW2GUI(self)
@@ -34,12 +34,6 @@ class Controller:
 
     def cRemoveItemL(self, pItem: str):
         self.tp.removeItemL(pItem)
-
-    def cGetItemP(self):
-        return self.gui.getItemLP()
-
-    def cGetItemV(self):
-        return self.gui.getItemLV()
 
     def cGetID(self, pItem):
         return self.tp.getId(pItem)
