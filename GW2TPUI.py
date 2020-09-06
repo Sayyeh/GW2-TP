@@ -194,4 +194,7 @@ class GW2GUI:
 
         self.main.after(1000, self.priceLoop, pIndex)
 
+    def getMain(self):
+        return self.main
+
 

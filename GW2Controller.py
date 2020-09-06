@@ -53,5 +53,5 @@ class Controller:
     def cNoti(self, pItem, pPreis, pVersion):
         self.tp.winNoti(pItem, pPreis, pVersion)
 
-a = Controller()
-a.getGUI().main.mainloop()
+#a = Controller()
+#a.getGUI().main.mainloop()
