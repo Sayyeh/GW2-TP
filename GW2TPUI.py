@@ -13,11 +13,13 @@ class GW2GUI:
         self.controller = pController
         self.itemUIP = {}
         self.itemUIV = {}
+        self.itemUIG = {}
         self.widgets = []
         self.imgGold = tk.PhotoImage(file = "Images/Gold_coin.png")
         self.imgSilber = tk.PhotoImage(file = "Images/Silver_coin.png")
         self.imgBronze = tk.PhotoImage(file = "Images/Copper_coin.png")
         self.v = tk.IntVar()
+        self.g = tk.IntVar()
         self.b = tk.StringVar()
         self.u = tk.StringVar()
 
@@ -92,6 +94,14 @@ class GW2GUI:
                                    disabledforeground= "#494a49", command = self.saveItem)
         self.saveButton.place(x = 368, y = 104)
 
+        self.biggerRadio = tk.Radiobutton(self.main, text = "Check größer", variable = self.g, value = 1, bg = "#383a39", fg = "#EEE9E9",
+                                       activebackground = "#383a39", activeforeground = "#EEE9E9", selectcolor = "#1c1d1c", state = "disabled")
+        self.biggerRadio.place(x = 220, y = 120)
+
+        self.smallerRadio = tk.Radiobutton(self.main, text = "Check kleiner", variable = self.g, value = 2, bg = "#383a39", fg = "#EEE9E9",
+                                       activebackground = "#383a39", activeforeground = "#EEE9E9", selectcolor = "#1c1d1c", state = "disabled")
+        self.smallerRadio.place(x = 220, y = 138)
+
         self.priceUpdate(0)
 
     def readItem(self):
@@ -99,10 +109,10 @@ class GW2GUI:
 
         if temp[0] and temp[1]:
             for i in temp[0]:
-                self.addDataItem(i, temp[0][i], temp[1][i])
+                self.addDataItem(i, temp[0][i], temp[1][i], temp[2][i])
 
     def saveItem(self):
-        self.controller.cSaveItem(self.itemUIP, self.itemUIV)
+        self.controller.cSaveItem(self.itemUIP, self.itemUIV, self.itemUIG)
 
     def getItemLP(self):
         return self.itemUIP
@@ -118,13 +128,15 @@ class GW2GUI:
 
             self.widgets = [self.apiChange, self.tpItem, self.tpButton, self.tpEntry, self.goldEntry, self.goldT,
                             self.silberEntry, self.silberT, self.bronzeEntry, self.bronzeT, self.buyRadio,
-                            self.sellRadio, self.tpRemove, self.updateOption, self.saveButton]
+                            self.sellRadio, self.tpRemove, self.updateOption, self.saveButton, self.biggerRadio,
+                            self.smallerRadio]
 
             self.apiEntry.config(state = "disabled")
             self.apiButton.config(state = "disabled")
             for i in self.widgets:
                 i.config(state = "normal")
             self.v.set(1)
+            self.g.set(1)
             self.updateOption["values"] = ["1 min", "2 min", "3 min", "4 min", "5 min"]
             self.u.set("1 min")
             self.boxUpdate()
@@ -143,10 +155,11 @@ class GW2GUI:
         self.apiEntry.config(state="normal")
         self.apiButton.config(state="normal")
 
-    def addDataItem(self, pItem, pPreis, pVersion):
+    def addDataItem(self, pItem, pPreis, pVersion, pOperator):
         self.tpItem.insert("end", pItem)
         self.itemUIP[pItem] = pPreis
         self.itemUIV[pItem] = pVersion
+        self.itemUIG[pItem] = pOperator
         self.controller.cSetItemL(pItem)
 
     def addItem(self): #Item der Listbox hinzufügen
@@ -156,10 +169,8 @@ class GW2GUI:
             self.tpItem.insert("end", item)
             self.itemUIP[item] = self.controller.cConvertGtoC(int(self.goldEntry.get()), int(self.silberEntry.get()), int(self.bronzeEntry.get()))
             self.controller.cSetItemL(item)
-            if self.v.get() == 1:
-                self.itemUIV[item] = "Buy"
-            else:
-                self.itemUIV[item] = "Sell"
+            self.itemUIV[item] = "Buy" if self.v.get() == 1 else "Sell"
+            self.itemUIG[item] = "Größer" if self.g.get() == 1 else "Kleiner"
 
         self.tpEntry.delete(0, "end")
 
@@ -168,7 +179,8 @@ class GW2GUI:
             if self.tpItem.curselection():
                 currency = self.controller.cConvertCtoG(self.itemUIP[self.tpItem.get((self.tpItem.curselection()))])
                 order = self.itemUIV[self.tpItem.get((self.tpItem.curselection()))]
-                self.b.set("{} Gold {} Silber {} Bronze \n{}".format(currency[0], currency[1], currency[2], order) + " Order")
+                operator = self.itemUIG[self.tpItem.get(self.tpItem.curselection())]
+                self.b.set("{} Gold {} Silber {} Bronze \nOrder: {} \nOperator: {}".format(currency[0], currency[1], currency[2], order, operator))
         except ValueError and KeyError:
             pass
 
@@ -186,9 +198,13 @@ class GW2GUI:
         if pIndex + 1 > len(self.itemUIP):
             pIndex = 0
         try:
-            print(self.itemUIP[list(self.itemUIP)[pIndex]])
-            if pIndex + 1 <= len(self.itemUIP) and self.itemUIP[list(self.itemUIP)[pIndex]] <= self.controller.cGetPreise(list(self.itemUIP)[pIndex], self.itemUIV[list(self.itemUIV)[pIndex]]):
-                self.controller.cNoti(list(self.itemUIP)[pIndex], self.itemUIP[list(self.itemUIP)[pIndex]], self.itemUIV[list(self.itemUIV)[pIndex]])
+            if pIndex + 1 <= len(self.itemUIP) and self.itemUIP[list(self.itemUIP)[pIndex]] <= self.controller.cGetPreise(list(self.itemUIP)[pIndex], self.itemUIV[list(self.itemUIV)[pIndex]])\
+                and self.g.get() == 1:
+                self.controller.cNoti(list(self.itemUIP)[pIndex], self.itemUIP[list(self.itemUIP)[pIndex]],
+                                      self.itemUIV[list(self.itemUIV)[pIndex]], self.itemUIG[list(self.itemUIV)[pIndex]])
+            elif pIndex + 1 <= len(self.itemUIP) and self.itemUIP[list(self.itemUIP)[pIndex]] >= self.controller.cGetPreise(list(self.itemUIP)[pIndex], self.itemUIV[list(self.itemUIV)[pIndex]]):
+                self.controller.cNoti(list(self.itemUIP)[pIndex], self.itemUIP[list(self.itemUIP)[pIndex]],
+                                      self.itemUIV[list(self.itemUIV)[pIndex]], self.itemUIG[list(self.itemUIV)[pIndex]])
         except TypeError and IndexError:
             pass
 

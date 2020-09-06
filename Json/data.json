@@ -1,8 +1,11 @@
 {
   "Preise": {
-    "Mystic Coin": 12000
+    "Mystic Coin": 7000
   },
   "Versionen": {
     "Mystic Coin": "Buy"
+  },
+  "Operator": {
+    "Mystic Coin": "Gr\u00f6\u00dfer"
   }
 }

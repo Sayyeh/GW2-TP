@@ -44,14 +44,14 @@ class Controller:
     def cGetID(self, pItem):
         return self.tp.getId(pItem)
 
-    def cSaveItem(self, pItemP, pItemV):
-        self.tp.saveData(pItemP, pItemV)
+    def cSaveItem(self, pItemP, pItemV, pItemG):
+        self.tp.saveData(pItemP, pItemV, pItemG)
 
     def cReadItem(self):
         return self.tp.readData()
 
-    def cNoti(self, pItem, pPreis, pVersion):
-        self.tp.winNoti(pItem, pPreis, pVersion)
+    def cNoti(self, pItem, pPreis, pVersion, pOperator):
+        self.tp.winNoti(pItem, pPreis, pVersion, pOperator)
 
 #a = Controller()
 #a.getGUI().main.mainloop()
