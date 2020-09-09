@@ -94,11 +94,11 @@ class GW2GUI:
                                    disabledforeground= "#494a49", command = self.saveItem)
         self.saveButton.place(x = 368, y = 104)
 
-        self.biggerRadio = tk.Radiobutton(self.main, text = "Check größer", variable = self.g, value = 1, bg = "#383a39", fg = "#EEE9E9",
+        self.biggerRadio = tk.Radiobutton(self.main, text = "TP Preis größer", variable = self.g, value = 1, bg = "#383a39", fg = "#EEE9E9",
                                        activebackground = "#383a39", activeforeground = "#EEE9E9", selectcolor = "#1c1d1c", state = "disabled")
         self.biggerRadio.place(x = 220, y = 120)
 
-        self.smallerRadio = tk.Radiobutton(self.main, text = "Check kleiner", variable = self.g, value = 2, bg = "#383a39", fg = "#EEE9E9",
+        self.smallerRadio = tk.Radiobutton(self.main, text = "TP Preis kleiner", variable = self.g, value = 2, bg = "#383a39", fg = "#EEE9E9",
                                        activebackground = "#383a39", activeforeground = "#EEE9E9", selectcolor = "#1c1d1c", state = "disabled")
         self.smallerRadio.place(x = 220, y = 138)
 
@@ -196,7 +196,8 @@ class GW2GUI:
                 and self.g.get() == 1:
                 self.controller.cNoti(list(self.itemUIP)[pIndex], self.itemUIP[list(self.itemUIP)[pIndex]],
                                       self.itemUIV[list(self.itemUIV)[pIndex]], self.itemUIG[list(self.itemUIV)[pIndex]])
-            elif pIndex + 1 <= len(self.itemUIP) and self.itemUIP[list(self.itemUIP)[pIndex]] >= self.controller.cGetPreise(list(self.itemUIP)[pIndex], self.itemUIV[list(self.itemUIV)[pIndex]]):
+            elif pIndex + 1 <= len(self.itemUIP) and self.itemUIP[list(self.itemUIP)[pIndex]] >= self.controller.cGetPreise(list(self.itemUIP)[pIndex], self.itemUIV[list(self.itemUIV)[pIndex]]) \
+                and self.g.get() == 2:
                 self.controller.cNoti(list(self.itemUIP)[pIndex], self.itemUIP[list(self.itemUIP)[pIndex]],
                                       self.itemUIV[list(self.itemUIV)[pIndex]], self.itemUIG[list(self.itemUIV)[pIndex]])
         except TypeError and IndexError:
