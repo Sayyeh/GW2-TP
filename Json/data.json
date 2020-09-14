@@ -1,11 +1,20 @@
 {
   "Preise": {
-    "Mystic Coin": 16000
+    "Mystic Coin": 16000,
+    "+1 Agony Infusion": 90,
+    "+9 Agony Infusion": 70000,
+    "+10 Agony Infusion": 100000
   },
   "Versionen": {
-    "Mystic Coin": "Buy"
+    "Mystic Coin": "Buy",
+    "+1 Agony Infusion": "Buy",
+    "+9 Agony Infusion": "Buy",
+    "+10 Agony Infusion": "Buy"
   },
   "Operator": {
-    "Mystic Coin": "Kleiner"
+    "Mystic Coin": "Kleiner",
+    "+1 Agony Infusion": "Kleiner",
+    "+9 Agony Infusion": "Kleiner",
+    "+10 Agony Infusion": "Gr\u00f6\u00dfer"
   }
 }

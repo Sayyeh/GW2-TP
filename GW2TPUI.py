@@ -122,7 +122,7 @@ class GW2GUI:
             self.v.set(1)
             self.g.set(1)
             self.updateOption["values"] = ["1 min", "2 min", "3 min", "4 min", "5 min"]
-            self.u.set("1 min")
+            self.u.set("2 min")
             self.boxUpdate()
         if len(self.itemUIP) == 0:  # Wenn was im Speicher, lade ihn
             self.readItem()
@@ -179,14 +179,15 @@ class GW2GUI:
         if pIndex + 1 > len(self.itemUIP):
             pIndex = 0
         try:
-            if pIndex + 1 <= len(self.itemUIP) and self.itemUIP[list(self.itemUIP)[pIndex]] <= self.controller.cGetPreise(list(self.itemUIP)[pIndex], self.itemUIV[list(self.itemUIV)[pIndex]])\
-                and self.g.get() == 1:
+            preisTP = self.controller.cGetPreise(list(self.itemUIP)[pIndex], self.itemUIV[list(self.itemUIV)[pIndex]])
+            preisItem = self.itemUIP[list(self.itemUIP)[pIndex]]
+            op = self.itemUIG[list(self.itemUIV)[pIndex]]
+            if pIndex + 1 <= len(self.itemUIP) and preisItem <= preisTP and op == "Größer":
                 self.controller.cNoti(list(self.itemUIP)[pIndex], self.itemUIP[list(self.itemUIP)[pIndex]],
-                                      self.itemUIV[list(self.itemUIV)[pIndex]], self.itemUIG[list(self.itemUIV)[pIndex]])
-            elif pIndex + 1 <= len(self.itemUIP) and self.itemUIP[list(self.itemUIP)[pIndex]] >= self.controller.cGetPreise(list(self.itemUIP)[pIndex], self.itemUIV[list(self.itemUIV)[pIndex]]) \
-                and self.g.get() == 2:
+                                      self.itemUIV[list(self.itemUIV)[pIndex]], op)
+            elif pIndex + 1 <= len(self.itemUIP) and preisItem >= preisTP and op == "Kleiner":
                 self.controller.cNoti(list(self.itemUIP)[pIndex], self.itemUIP[list(self.itemUIP)[pIndex]],
-                                      self.itemUIV[list(self.itemUIV)[pIndex]], self.itemUIG[list(self.itemUIV)[pIndex]])
+                                      self.itemUIV[list(self.itemUIV)[pIndex]], op)
         except TypeError and IndexError:
             pass
 
