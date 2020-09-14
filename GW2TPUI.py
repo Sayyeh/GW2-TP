@@ -23,18 +23,14 @@ class GW2GUI:
         self.b = tk.StringVar()
         self.u = tk.StringVar()
 
-        self.apiButton = tk.Button(self.main, text = "API-Key eingeben", font = ("Verdanan", 10, "bold"), bg="#1c1d1c", fg="#EEE9E9",
-                                   activeforeground = "#ce480f", activebackground = "#1c1d1c", relief = "flat", bd = 0, state = "disabled",
-                                   disabledforeground= "#494a49", command = self.startAPI)
-        self.apiButton.place(x = 0, y = 0)
+        self.title = tk.Label(self.main, text = "GW2 Price Alarm", font = ("Verdanan", 21, "bold"), bg="#1c1d1c", fg="#EEE9E9",
+                             activeforeground = "#ce480f", activebackground = "#1c1d1c", relief = "flat", bd = 0)
+        self.title.place(x = 0, y = 0)
 
-        self.apiEntry = tk.Entry(self.main, bg = "#1c1d1c", fg = "#EEE9E9", width = 75, bd = 0, state = "disabled", disabledbackground = "#494a49", disabledforeground= "#EEE9E9")
-        self.apiEntry.place(x = 0, y = 25)
-
-        self.apiChange = tk.Button(self.main, text = "Change", font = ("Verdanan", 10, "bold"), bg="#1c1d1c", fg="#EEE9E9",
-                                   activeforeground = "#ce480f", activebackground = "#1c1d1c", relief = "flat", bd = 0,
-                                   disabledforeground= "#494a49", command = self.changeAPIstate)
-        self.apiChange.place(x = 395, y = 0)
+        self.ladenButton = tk.Button(self.main, text = "Laden", font = ("Verdanan", 11, "bold"), bg="#1c1d1c", fg="#EEE9E9",
+                                     activeforeground = "#ce480f", activebackground = "#1c1d1c", relief = "flat", bd = 0, state = "normal",
+                                     disabledforeground= "#494a49", command = self.startGUI)
+        self.ladenButton.place(x = 0, y = 35)
 
         self.tpItem = tk.Listbox(self.main, bg = "#1c1d1c", font = ("Verdanan", 10, "bold"), bd = 0, highlightthickness = 0, selectbackground = "#ce480f", fg = "white")
         self.tpItem.place(x = 0, y = 60)
@@ -114,40 +110,31 @@ class GW2GUI:
     def saveItem(self): #Speichere Items in den Spreicher
         self.controller.cSaveItem(self.itemUIP, self.itemUIV, self.itemUIG)
 
-    def startAPI(self): #API übertrangen und WIdgets entsperren
-        self.controller.cSetAPI(self.apiEntry.get())
-
-        if len(self.apiEntry.get()) != 0:
-            self.apiEntry.delete(0, "end")
-
-            self.widgets = [self.apiChange, self.tpItem, self.tpButton, self.tpEntry, self.goldEntry, self.goldT,
+    def startGUI(self): #GUI starten und entsperren (war früher startAPI())
+        if self.tpButton["state"] == "disabled":
+            self.widgets = [self.tpItem, self.tpButton, self.tpEntry, self.goldEntry, self.goldT,
                             self.silberEntry, self.silberT, self.bronzeEntry, self.bronzeT, self.buyRadio,
                             self.sellRadio, self.tpRemove, self.updateOption, self.saveButton, self.biggerRadio,
-                            self.smallerRadio] #Alle Widgets
+                            self.smallerRadio]  # Alle Widgets
 
-            self.apiEntry.config(state = "disabled")
-            self.apiButton.config(state = "disabled")
-            for i in self.widgets: #Widgets werden entsperrt
-                i.config(state = "normal")
+            for i in self.widgets:  # Widgets werden entsperrt
+                i.config(state="normal")
             self.v.set(1)
             self.g.set(1)
             self.updateOption["values"] = ["1 min", "2 min", "3 min", "4 min", "5 min"]
             self.u.set("1 min")
             self.boxUpdate()
-            if len(self.itemUIP) == 0: #Wenn was im Speicher, lade ihn
-                self.readItem()
+        if len(self.itemUIP) == 0:  # Wenn was im Speicher, lade ihn
+            self.readItem()
 
     def removeItem(self): #Item aus der Listbox entfernen
         if self.tpItem.curselection():
             item = self.tpItem.get(self.tpItem.curselection())
             self.itemUIP.pop(item, None)
             self.itemUIV.pop(item, None)
+            self.itemUIG.pop(item, None)
             self.tpItem.delete(self.tpItem.curselection())
             self.controller.cRemoveItemL(item)
-
-    def changeAPIstate(self): #API-Eingabefeld entsperren
-        self.apiEntry.config(state="normal")
-        self.apiButton.config(state="normal")
 
     def addDataItem(self, pItem, pPreis, pVersion, pOperator): #Item aus dem Speicher der GUI hinzufügen
         self.tpItem.insert("end", pItem)

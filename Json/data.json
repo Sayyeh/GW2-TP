@@ -1,14 +1,11 @@
 {
   "Preise": {
-    "Mystic Coin": 16000,
-    "Molten Shard": 1500
+    "Mystic Coin": 16000
   },
   "Versionen": {
-    "Mystic Coin": "Buy",
-    "Molten Shard": "Buy"
+    "Mystic Coin": "Buy"
   },
   "Operator": {
-    "Mystic Coin": "Kleiner",
-    "Molten Shard": "Kleiner"
+    "Mystic Coin": "Kleiner"
   }
 }
