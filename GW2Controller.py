@@ -22,7 +22,7 @@ class Controller:
     def cConvertGtoC(self, pGold: int, pSilber: int, pBronze: int):
         return self.tp.ConvertGSCtoC(pGold, pSilber, pBronze)
 
-    def cSetAPI(self, pAPI):
+    def cSetAPI(self, pAPI: str):
         return self.tp.setAPI(pAPI)
 
     def cGetPreise(self, pItem: str, pVersion: str):
@@ -35,16 +35,16 @@ class Controller:
     def cRemoveItemL(self, pItem: str):
         self.tp.removeItemL(pItem)
 
-    def cGetID(self, pItem):
+    def cGetID(self, pItem: str):
         return self.tp.getId(pItem)
 
-    def cSaveItem(self, pItemP, pItemV, pItemG):
+    def cSaveItem(self, pItemP: list, pItemV: list, pItemG: list):
         self.tp.saveData(pItemP, pItemV, pItemG)
 
     def cReadItem(self):
         return self.tp.readData()
 
-    def cNoti(self, pItem, pPreis, pVersion, pOperator):
+    def cNoti(self, pItem: str, pPreis: int, pVersion: str, pOperator: str):
         self.tp.winNoti(pItem, pPreis, pVersion, pOperator)
 
 #a = Controller()

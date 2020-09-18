@@ -6,7 +6,7 @@ class GW2Json:
         pass
 
     @staticmethod
-    def jsonCreate(pItemLP, pItemLV, pItemG):
+    def jsonCreate(pItemLP: list, pItemLV: list, pItemG: list):
         data = {"Preise": pItemLP, "Versionen": pItemLV, "Operator": pItemG}
 
         with open("Json/data.json", "w") as outfile:

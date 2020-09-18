@@ -136,7 +136,7 @@ class GW2GUI:
             self.tpItem.delete(self.tpItem.curselection())
             self.controller.cRemoveItemL(item)
 
-    def addDataItem(self, pItem, pPreis, pVersion, pOperator): #Item aus dem Speicher der GUI hinzufügen
+    def addDataItem(self, pItem: str, pPreis: int, pVersion: str, pOperator: str): #Item aus dem Speicher der GUI hinzufügen
         self.tpItem.insert("end", pItem)
         self.itemUIP[pItem] = pPreis
         self.itemUIV[pItem] = pVersion
@@ -167,7 +167,7 @@ class GW2GUI:
 
         self.main.after(500, self.boxUpdate)
 
-    def priceLoop(self, pIndex): #ForLoop Alternative für priceUpdate()
+    def priceLoop(self, pIndex: int): #ForLoop Alternative für priceUpdate()
         time = self.updateOption.current() + 1
 
         try:
@@ -175,7 +175,7 @@ class GW2GUI:
         except ZeroDivisionError:
             self.main.after(60000 * time, self.priceUpdate, pIndex + 1)
 
-    def priceUpdate(self, pIndex): #Get Preis und vergleiche ihn
+    def priceUpdate(self, pIndex: int): #Get Preis und vergleiche ihn
         if pIndex + 1 > len(self.itemUIP):
             pIndex = 0
         try:

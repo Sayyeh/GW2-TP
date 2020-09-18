@@ -21,7 +21,7 @@ class GW2Alarm:
     def readData(self): #Lese Items vom Speicher
         return self.data.jsonRead()
 
-    def saveData(self, pItemP, pItemV, pItemG): #Schreibe Items in den Speicher
+    def saveData(self, pItemP: list, pItemV: list, pItemG: list): #Schreibe Items in den Speicher
         self.data.jsonCreate(pItemP, pItemV, pItemG)
 
     def setAPI(self, pAPI: str): #Setze den API-Key
@@ -109,8 +109,8 @@ class GW2Alarm:
     def getDelivery(self): #Noch nicht von nutzen
         return self.client.commercedelivery.get()
 
-    def winNoti(self, pItem, pPreis, pVersion, pOperator): #Win10 Benachrichtigung mit extra Infos
-        commerce = self.ConvertCtoGSC(int(pPreis))
+    def winNoti(self, pItem: str, pPreis: int, pVersion: str, pOperator: str): #Win10 Benachrichtigung mit extra Infos
+        commerce = self.ConvertCtoGSC(pPreis)
         operator = "über" if pOperator == "Größer" else "unter"
         self.noti.show_toast("GW2 Price Alarm", "Item {} ist {} Preis {} Gold {} Silber {} Copper \n{} Order".format(pItem, operator, commerce[0], commerce[1], commerce[2], pVersion),
                              duration=20, icon_path = "images\icon.ico", threaded = True)
