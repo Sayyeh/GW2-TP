@@ -100,12 +100,14 @@ class GW2GUI:
 
         self.priceUpdate(0)
 
-    def readItem(self): #Lese Items aus dem Speicher
+    def readItem(self, pIndex = 0): #Lese Items aus dem Speicher
         temp = self.controller.cReadItem()
 
-        if temp[0] and temp[1]:
-            for i in temp[0]:
-                self.addDataItem(i, temp[0][i], temp[1][i], temp[2][i])
+        if temp[0] and pIndex + 1 <= len(temp[0]): #Items werden der Reihe nach geladen
+            i = list(temp[0])[pIndex]
+            self.addDataItem(i, temp[0][i], temp[1][i], temp[2][i])
+
+            self.main.after(10, self.readItem, pIndex + 1)
 
     def saveItem(self): #Speichere Items in den Spreicher
         self.controller.cSaveItem(self.itemUIP, self.itemUIV, self.itemUIG)
@@ -165,7 +167,7 @@ class GW2GUI:
         except ValueError and KeyError:
             pass
 
-        self.main.after(500, self.boxUpdate)
+        self.main.after(450, self.boxUpdate)
 
     def priceLoop(self, pIndex: int): #ForLoop Alternative für priceUpdate()
         time = self.updateOption.current() + 1

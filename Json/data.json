@@ -1,17 +1,14 @@
 {
   "Preise": {
-    "Mystic Coin": 16000,
-    "+1 Agony Infusion": 90,
-    "+9 Agony Infusion": 70000
+    "Mystic Coin": 15900,
+    "Vicious Fang": 1805
   },
   "Versionen": {
     "Mystic Coin": "Buy",
-    "+1 Agony Infusion": "Buy",
-    "+9 Agony Infusion": "Buy"
+    "Vicious Fang": "Sell"
   },
   "Operator": {
     "Mystic Coin": "Kleiner",
-    "+1 Agony Infusion": "Kleiner",
-    "+9 Agony Infusion": "Kleiner"
+    "Vicious Fang": "Gr\u00f6\u00dfer"
   }
 }
