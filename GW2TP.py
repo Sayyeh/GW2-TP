@@ -1,4 +1,4 @@
-from gw2api import GuildWars2Client
+from GW2TPAPI import GW2API
 from win10toast import ToastNotifier
 from GW2Json import GW2Json
 import json
@@ -13,10 +13,11 @@ class GW2Alarm:
         self.API = pAPI
         self.controller = pContoller
         self.toast = ToastNotifier() #Win10 Notification
-        self.client = GuildWars2Client(api_key = self.API)  # Mit der GW2 API verbinden
+        self.client = GW2API(pAPI = self.API)  # Mit der GW2 API verbinden
         self.itemID = {}
         self.noti = ToastNotifier()
         self.data = GW2Json()
+        self.delay = 20
 
     def readData(self): #Lese Items vom Speicher
         return self.data.jsonRead()
@@ -25,7 +26,7 @@ class GW2Alarm:
         self.data.jsonCreate(pItemP, pItemV, pItemG)
 
     def setAPI(self, pAPI: str): #Setze den API-Key
-        self.API = pAPI
+        self.client.setAPI(pAPI)
 
     def getItemLID(self): #Return Itemliste mit ItemIds
         return self.itemID
@@ -99,29 +100,29 @@ class GW2Alarm:
     def getPreis(self, pItem: str, pVersion: str):
         # Hole buy und sell Preise der überwachten Items
 
-        bPreis = self.client.commerceprices.get(id = self.itemID[pItem])
+        bPreis = self.client.getCommerceprices(pId=pItem)
 
         return bPreis[pVersion]["unit_price"]
 
     def getClient(self): #Return self
         return self.client
 
-    def getDelivery(self): #Noch nicht von nutzen
-        return self.client.commercedelivery.get()
+    # def getDelivery(self): #Noch nicht von nutzen
+    #     return self.client.commercedelivery.get()
 
     def winNoti(self, pItem: str, pPreis: int, pVersion: str, pOperator: str): #Win10 Benachrichtigung mit extra Infos
         commerce = self.ConvertCtoGSC(pPreis)
         operator = "über" if pOperator == "Größer" else "unter"
         self.noti.show_toast("GW2 Price Alarm", "Item {} ist {} Preis {} Gold {} Silber {} Copper \n{} Order".format(pItem, operator, commerce[0], commerce[1], commerce[2], pVersion),
-                             duration=20, icon_path = "images\icon.ico", threaded = True)
+                             duration=self.delay, icon_path = "images\icon.ico", threaded = True)
+
+    def setDelay(self, pDelay: int):
+        self.delay = pDelay
+
 
 if __name__ == "__main__": #Zum Testen
-    a = GW2Alarm("E266A2C1-5D3F-124F-A518-340D555309A77F9EEF41-3882-4964-A367-867C698225A6")
+    a = GW2Alarm()
     print(a.getId("Mystic Coin"))
     a.setItemL("Mystic Coin")
-    a.setItemL("Elonian Greatblade")
-    a.setItemL("+1 Agony Infusion")
-    a.setItemL("+15 Agony Infusion")
+    print(a.getPreis("19976", "buys"))
 
-    print(a.getItemLID())
-    b = a.client.commerceprices.get(id = a.getId("Mystic Coin"))

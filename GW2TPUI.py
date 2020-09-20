@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from GW2TPAPI import WrongStatus
 
 class GW2GUI:
 
@@ -11,17 +12,18 @@ class GW2GUI:
         self.main.configure(background="#383a39")
         self.main.iconbitmap("Images/icon.ico")
         self.controller = pController
-        self.itemUIP = {}
-        self.itemUIV = {}
-        self.itemUIG = {}
-        self.widgets = []
+        self.itemUIP = {} #Liste der Preise
+        self.itemUIV = {} #Liste der Buy/Sell Order
+        self.itemUIG = {} #Liste der Operatoren
+        self.widgets = [] #Liste der Widgets
         self.imgGold = tk.PhotoImage(file = "Images/Gold_coin.png")
         self.imgSilber = tk.PhotoImage(file = "Images/Silver_coin.png")
         self.imgBronze = tk.PhotoImage(file = "Images/Copper_coin.png")
-        self.v = tk.IntVar()
-        self.g = tk.IntVar()
-        self.b = tk.StringVar()
-        self.u = tk.StringVar()
+        self.v = tk.IntVar() #Buy/Sell Order
+        self.g = tk.IntVar() #Operator
+        self.b = tk.StringVar() #Anzeige Text beim Auswählen eines Items
+        self.u = tk.StringVar() #Updatetimer
+        self.d = tk.StringVar() #Dauer der Win10 Notification
 
         self.title = tk.Label(self.main, text = "GW2 Price Alarm", font = ("Verdanan", 21, "bold"), bg="#1c1d1c", fg="#EEE9E9",
                              activeforeground = "#ce480f", activebackground = "#1c1d1c", relief = "flat", bd = 0)
@@ -82,8 +84,16 @@ class GW2GUI:
         self.updateOption.place(x = 0, y = 233)
         self.updateOption.bind("<Key>", lambda e: "break")
 
+        self.delayOption = ttk.Combobox(self.main, textvariable = self.d, state = "disabled")
+        self.delayOption.place(x = 0, y = 293)
+        self.delayOption.bind("<Key>", lambda e: "break")
+        self.delayOption.bind("<<ComboboxSelected>>", self.setDelay)
+
         self.updateLabel = tk.Label(self.main, text = "Wie oft soll geupdated \nwerden?", font = ("Verdanan", 9, "bold"), bg="#383a39", fg="#EEE9E9")
         self.updateLabel.place(x = 0, y = 255)
+
+        self.delayLabel = tk.Label(self.main, text = "Wie lange \nsollen Benachrichtungen \nangezeigt werden?", font = ("Verdanan", 9, "bold"), bg="#383a39", fg="#EEE9E9")
+        self.delayLabel.place(x = 0, y = 315)
 
         self.saveButton = tk.Button(self.main, text = "Speichern", font = ("Verdanan", 10, "bold"), bg="#1c1d1c", fg="#EEE9E9",
                                    activeforeground = "#ce480f", activebackground = "#1c1d1c", relief = "flat", bd = 0, state = "disabled",
@@ -113,21 +123,23 @@ class GW2GUI:
         self.controller.cSaveItem(self.itemUIP, self.itemUIV, self.itemUIG)
 
     def startGUI(self): #GUI starten und entsperren (war früher startAPI())
+        if len(self.itemUIP) == 0:  # Wenn was im Speicher, lade ihn
+            self.readItem()
         if self.tpButton["state"] == "disabled":
             self.widgets = [self.tpItem, self.tpButton, self.tpEntry, self.goldEntry, self.goldT,
                             self.silberEntry, self.silberT, self.bronzeEntry, self.bronzeT, self.buyRadio,
                             self.sellRadio, self.tpRemove, self.updateOption, self.saveButton, self.biggerRadio,
-                            self.smallerRadio]  # Alle Widgets
+                            self.smallerRadio, self.delayOption]  # Alle Widgets
 
             for i in self.widgets:  # Widgets werden entsperrt
                 i.config(state="normal")
             self.v.set(1)
             self.g.set(1)
             self.updateOption["values"] = ["1 min", "2 min", "3 min", "4 min", "5 min"]
+            self.delayOption["values"] = ["25 sec", "20 sec", "15 sec", "10 sec"]
             self.u.set("2 min")
+            self.d.set("20 sec")
             self.boxUpdate()
-        if len(self.itemUIP) == 0:  # Wenn was im Speicher, lade ihn
-            self.readItem()
 
     def removeItem(self): #Item aus der Listbox entfernen
         if self.tpItem.curselection():
@@ -190,12 +202,15 @@ class GW2GUI:
             elif pIndex + 1 <= len(self.itemUIP) and preisItem >= preisTP and op == "Kleiner":
                 self.controller.cNoti(list(self.itemUIP)[pIndex], self.itemUIP[list(self.itemUIP)[pIndex]],
                                       self.itemUIV[list(self.itemUIV)[pIndex]], op)
-        except TypeError and IndexError:
+        except (WrongStatus, IndexError, TypeError):
             pass
 
         self.main.after(1000, self.priceLoop, pIndex)
 
     def getMain(self): #Return main
         return self.main
+
+    def setDelay(self, event): #Delay übergeben
+        self.controller.cSetDelay(int(self.d.get()[0:2]))
 
 

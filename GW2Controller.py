@@ -47,5 +47,8 @@ class Controller:
     def cNoti(self, pItem: str, pPreis: int, pVersion: str, pOperator: str):
         self.tp.winNoti(pItem, pPreis, pVersion, pOperator)
 
+    def cSetDelay(self, pDelay: int):
+        self.tp.setDelay(pDelay)
+
 #a = Controller()
 #a.getGUI().main.mainloop()
