@@ -100,7 +100,7 @@ class GW2Alarm:
     def getPreis(self, pItem: str, pVersion: str):
         # Hole buy und sell Preise der überwachten Items
 
-        bPreis = self.client.getCommerceprices(pId=pItem)
+        bPreis = self.client.getCommerceprices(pId=self.itemID[pItem])
 
         return bPreis[pVersion]["unit_price"]
 

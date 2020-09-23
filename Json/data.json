@@ -1,14 +1,11 @@
 {
   "Preise": {
-    "Mystic Coin": 15900,
-    "Vicious Fang": 1805
+    "Bolt": 23999900
   },
   "Versionen": {
-    "Mystic Coin": "Buy",
-    "Vicious Fang": "Sell"
+    "Bolt": "Sell"
   },
   "Operator": {
-    "Mystic Coin": "Kleiner",
-    "Vicious Fang": "Gr\u00f6\u00dfer"
+    "Bolt": "Kleiner"
   }
 }
