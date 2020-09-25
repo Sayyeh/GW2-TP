@@ -13,9 +13,7 @@ class GW2GUI:
         self.main.configure(background="#383a39")
         self.main.iconbitmap("Images/icon.ico")
         self.controller = pController
-        self.itemUIP = {} #Liste der Preise
-        self.itemUIV = {} #Liste der Buy/Sell Order
-        self.itemUIG = {} #Liste der Operatoren
+        self.itemUIP = [] #Liste der Items
         self.imgGold = tk.PhotoImage(file = "Images/Gold_coin.png")
         self.imgSilber = tk.PhotoImage(file = "Images/Silver_coin.png")
         self.imgBronze = tk.PhotoImage(file = "Images/Copper_coin.png")
@@ -123,17 +121,17 @@ class GW2GUI:
     def readItem(self, pIndex = 0): #Lese Items aus dem Speicher
         temp = self.controller.cReadItem()
 
-        if temp[0] and pIndex + 1 <= len(temp[0]): #Items werden der Reihe nach geladen
-            i = list(temp[0])[pIndex]
-            self.addDataItem(i, temp[0][i], temp[1][i], temp[2][i])
+        if temp and pIndex + 1 <= len(temp): #Items werden der Reihe nach geladen
+            i = list(temp)[pIndex]
+            self.addDataItem(i, temp[i]["Preis"], temp[i]["Version"], temp[i]["Operator"])
 
             self.main.after(10, self.readItem, pIndex + 1)
 
     def saveItem(self): #Speichere Items in den Spreicher
-        self.controller.cSaveItem(self.itemUIP, self.itemUIV, self.itemUIG)
+        self.controller.cSaveItem()
 
     def laden(self):
-        if len(self.itemUIP) == 0:  #Wenn was im Speicher, lade ihn
+        if self.tpItem.size() == 0:  #Wenn was im Speicher, lade ihn
             self.readItem()
 
     def startGUI(self): #GUI starten und entsperren (war früher startAPI())
@@ -144,25 +142,21 @@ class GW2GUI:
             self.a.set(2)
             self.updateOption["values"] = ["1 min", "2 min", "3 min", "4 min", "5 min"]
             self.delayOption["values"] = ["25 sec", "20 sec", "15 sec", "10 sec"]
-            self.u.set("2 min")
+            self.u.set("1 min")
             self.d.set("20 sec")
             self.boxUpdate()
 
     def removeItem(self): #Item aus der Listbox entfernen
         if self.tpItem.curselection():
             item = self.tpItem.get(self.tpItem.curselection())
-            self.itemUIP.pop(item, None)
-            self.itemUIV.pop(item, None)
-            self.itemUIG.pop(item, None)
+            self.itemUIP.remove(item)
             self.tpItem.delete(self.tpItem.curselection())
             self.controller.cRemoveItemL(item)
 
     def addDataItem(self, pItem: str, pPreis: int, pVersion: str, pOperator: str): #Item aus dem Speicher der GUI hinzufügen
         self.tpItem.insert("end", pItem)
-        self.itemUIP[pItem] = pPreis
-        self.itemUIV[pItem] = pVersion
-        self.itemUIG[pItem] = pOperator
-        self.controller.cSetItemL(pItem)
+        self.itemUIP.append(pItem)
+        self.controller.cSetItemL(pItem, pPreis, pVersion, pOperator)
 
     def addItem(self): #Item der Listbox hinzufügen
         item = self.tpEntry.get()
@@ -170,25 +164,27 @@ class GW2GUI:
         if len(item) != 0 and self.goldEntry.get() and self.silberEntry.get() and self.bronzeEntry.get() and\
         self.controller.cGetID(item) is not None:
             self.tpItem.insert("end", item)
-            self.itemUIP[item] = self.controller.cConvertGtoC(int(self.goldEntry.get()), int(self.silberEntry.get()),
-                                                              int(self.bronzeEntry.get()))
-            self.controller.cSetItemL(item)
-            self.itemUIV[item] = "Buy" if self.v.get() == 1 else "Sell"
-            self.itemUIG[item] = "Größer" if self.g.get() == 1 else "Kleiner"
+            preis = self.controller.cConvertGtoC(int(self.goldEntry.get()), int(self.silberEntry.get()),
+                                                 int(self.bronzeEntry.get()))
+            version = "Buy" if self.v.get() == 1 else "Sell"
+            op = "Größer" if self.g.get() == 1 else "Kleiner"
+            self.controller.cSetItemL(item, preis, version, op)
+            self.itemUIP.append(item)
 
         self.tpEntry.delete(0, "end")
 
     def boxUpdate(self): #Item + Preis + Art der Order anzeigen
         try:
             if self.tpItem.curselection():
-                currency = self.controller.cConvertCtoG(self.itemUIP[self.tpItem.get((self.tpItem.curselection()))])
-                order = self.itemUIV[self.tpItem.get((self.tpItem.curselection()))]
-                operator = self.itemUIG[self.tpItem.get(self.tpItem.curselection())]
+                item = self.controller.cGetItem(self.tpItem.get((self.tpItem.curselection())))
+                currency = self.controller.cConvertCtoG(item["Preis"])
+                order = item["Version"]
+                operator = item["Operator"]
                 self.b.set("{} Gold {} Silber {} Bronze \nOrder: {} \nOperator: {}".format(currency[0], currency[1],
                                                                                            currency[2], order, operator))
             else:
                 self.b.set("")
-        except (ValueError, KeyError):
+        except (ValueError, KeyError) as e:
             pass
 
         self.main.after(400, self.boxUpdate)
@@ -205,16 +201,16 @@ class GW2GUI:
         if pIndex + 1 > len(self.itemUIP):
             pIndex = 0
         try:
-            preisTP = self.controller.cGetPreise(list(self.itemUIP)[pIndex], self.itemUIV[list(self.itemUIV)[pIndex]])
-            preisItem = self.itemUIP[list(self.itemUIP)[pIndex]]
-            op = self.itemUIG[list(self.itemUIV)[pIndex]]
+            item = self.controller.cGetItem(self.itemUIP[pIndex])
+            version = item["Version"]
+            preisTP = self.controller.cGetPreise(item["Name"], version)
+            preisItem = item["Preis"]
+            op = item["Operator"]
             if pIndex + 1 <= len(self.itemUIP) and preisItem <= preisTP and op == "Größer":
-                self.controller.cNoti(list(self.itemUIP)[pIndex], self.itemUIP[list(self.itemUIP)[pIndex]],
-                                      self.itemUIV[list(self.itemUIV)[pIndex]], op)
+                self.controller.cNoti(item["Name"], preisItem, version, op)
             elif pIndex + 1 <= len(self.itemUIP) and preisItem >= preisTP and op == "Kleiner":
-                self.controller.cNoti(list(self.itemUIP)[pIndex], self.itemUIP[list(self.itemUIP)[pIndex]],
-                                      self.itemUIV[list(self.itemUIV)[pIndex]], op)
-        except (WrongStatus, IndexError, TypeError):
+                self.controller.cNoti(item["Name"], preisItem, version, op)
+        except (WrongStatus, IndexError, TypeError) as e:
             pass
 
         self.main.after(1000, self.priceLoop, pIndex)
@@ -224,5 +220,3 @@ class GW2GUI:
 
     def setDelay(self, event): #Delay übergeben
         self.controller.cSetDelay(int(self.d.get()[0:2]))
-
-

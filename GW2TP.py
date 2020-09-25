@@ -1,11 +1,8 @@
 from GW2TPAPI import GW2API
 from win10toast import ToastNotifier
 from GW2Json import GW2Json
+from GW2Item import GW2Item
 import json
-
-# print(client.commercedelivery.get())
-# print(client.accountinventory.get())
-#accountinventory|accountwallet|commercedelivery|commerce/transactions|commerce/prices|commerce/listings
 
 class GW2Alarm:
     #"E266A2C1-5D3F-124F-A518-340D555309A77F9EEF41-3882-4964-A367-867C698225A6" Test API
@@ -14,7 +11,7 @@ class GW2Alarm:
         self.controller = pContoller
         self.toast = ToastNotifier() #Win10 Notification
         self.client = GW2API(pAPI = self.API)  # Mit der GW2 API verbinden
-        self.itemID = {}
+        self.itemL = {}
         self.noti = ToastNotifier()
         self.data = GW2Json()
         self.delay = 20
@@ -22,20 +19,22 @@ class GW2Alarm:
     def readData(self): #Lese Items vom Speicher
         return self.data.jsonRead()
 
-    def saveData(self, pItemP: list, pItemV: list, pItemG: list): #Schreibe Items in den Speicher
-        self.data.jsonCreate(pItemP, pItemV, pItemG)
+    def saveData(self): #Schreibe Items in den Speicher
+        self.data.jsonCreate(self.itemL)
 
     def setAPI(self, pAPI: str): #Setze den API-Key
         self.client.setAPI(pAPI)
 
-    def getItemLID(self): #Return Itemliste mit ItemIds
-        return self.itemID
+    def getItem(self, pItem): #Return Item
+        return self.itemL[pItem].__dict__
 
-    def setItemL(self, pItem: str): #Füge Item der Überwachungsliste hinzu oder verändere es
-        self.itemID[pItem] = self.getId(pItem)
+    def setItemL(self, pItem: str, pPreis, pVersion, pOperator): #Füge Item der Überwachungsliste hinzu oder verändere es
+        self.itemL[pItem] = GW2Item(pItem, pPreis, pVersion, pOperator)   #self.getId(pItem)
+        self.itemL[pItem].setId(self.getId(pItem))
 
     def removeItemL(self, pItem: str): #Lösche Item aus der Liste
-        self.itemID.pop(pItem, None)
+        del self.itemL[pItem]
+        self.itemL.pop(pItem, None)
 
     @staticmethod
     def ConvertCtoGSC(pCoin: int): #Umwandeln von Coins in Gold, Silber Bronze (Nicht die beste und effizienteste Variante, aber psscht)
@@ -61,9 +60,6 @@ class GW2Alarm:
             Gold = "0"
             Silber = "0"
             Bronze = pCoin
-
-        #print(pCoin)
-        #print(Gold, Silber, Bronze)
 
         return int(float(Gold)), int(float(Silber)), int(float(Bronze))
 
@@ -100,7 +96,7 @@ class GW2Alarm:
     def getPreis(self, pItem: str, pVersion: str):
         # Hole buy und sell Preise der überwachten Items
 
-        bPreis = self.client.getCommerceprices(pId=self.itemID[pItem])
+        bPreis = self.client.getCommerceprices(pId=self.itemL[pItem].getId())
 
         return bPreis[pVersion]["unit_price"]
 
@@ -119,10 +115,8 @@ class GW2Alarm:
     def setDelay(self, pDelay: int):
         self.delay = pDelay
 
-
 if __name__ == "__main__": #Zum Testen
     a = GW2Alarm()
     print(a.getId("Mystic Coin"))
-    a.setItemL("Mystic Coin")
     print(a.getPreis("19976", "buys"))
 

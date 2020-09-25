@@ -1,11 +1,10 @@
 {
-  "Preise": {
-    "Bolt": 23999900
-  },
-  "Versionen": {
-    "Bolt": "Sell"
-  },
-  "Operator": {
-    "Bolt": "Kleiner"
+  "Mystic Coin": {
+    "Name": "Mystic Coin",
+    "Preis": 15900,
+    "Version": "Buy",
+    "Operator": "Kleiner",
+    "Id": "19976",
+    "Mehrmals": false
   }
 }

@@ -29,8 +29,8 @@ class Controller:
         pVersion = pVersion.lower() + "s"
         return self.tp.getPreis(pItem, pVersion)
 
-    def cSetItemL(self, pItem: str):
-        self.tp.setItemL(pItem)
+    def cSetItemL(self, pItem, pPreis, pVersion, pOperator):
+        self.tp.setItemL(pItem, pPreis, pVersion, pOperator)
 
     def cRemoveItemL(self, pItem: str):
         self.tp.removeItemL(pItem)
@@ -38,8 +38,8 @@ class Controller:
     def cGetID(self, pItem: str):
         return self.tp.getId(pItem)
 
-    def cSaveItem(self, pItemP: list, pItemV: list, pItemG: list):
-        self.tp.saveData(pItemP, pItemV, pItemG)
+    def cSaveItem(self):
+        self.tp.saveData()
 
     def cReadItem(self):
         return self.tp.readData()
@@ -49,6 +49,9 @@ class Controller:
 
     def cSetDelay(self, pDelay: int):
         self.tp.setDelay(pDelay)
+
+    def cGetItem(self, pItem: str):
+        return self.tp.getItem(pItem)
 
 #a = Controller()
 #a.getGUI().main.mainloop()
