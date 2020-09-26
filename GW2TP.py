@@ -26,10 +26,10 @@ class GW2Alarm:
         self.client.setAPI(pAPI)
 
     def getItem(self, pItem): #Return Item
-        return self.itemL[pItem].__dict__
+        return self.itemL[pItem]
 
-    def setItemL(self, pItem: str, pPreis, pVersion, pOperator): #Füge Item der Überwachungsliste hinzu oder verändere es
-        self.itemL[pItem] = GW2Item(pItem, pPreis, pVersion, pOperator)   #self.getId(pItem)
+    def setItemL(self, pItem: str, pPreis, pVersion, pOperator, pAnzahl): #Füge Item der Überwachungsliste hinzu oder verändere es
+        self.itemL[pItem] = GW2Item(pItem, pPreis, pVersion, pOperator, pAnzahl)   #self.getId(pItem)
         self.itemL[pItem].setId(self.getId(pItem))
 
     def removeItemL(self, pItem: str): #Lösche Item aus der Liste

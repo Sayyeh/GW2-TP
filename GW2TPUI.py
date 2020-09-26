@@ -115,15 +115,27 @@ class GW2GUI:
                                             activebackground = "#383a39", activeforeground = "#EEE9E9", selectcolor = "#1c1d1c", state = "normal")
         self.mehrRadio.place(x = 140, y = 178)
 
+        self.reaktButton = tk.Button(self.main, text = "Reaktivieren", font = ("Verdanan", 9, "bold"), bg="#1c1d1c", fg="#EEE9E9",
+                                     activeforeground = "#ce480f", activebackground = "#1c1d1c", relief = "flat", bd = 0, state = "normal",
+                                     disabledforeground= "#494a49", command = self.reaktivierenItem)
+        self.reaktButton.place(x = 270, y = 162)
+
+        self.main.bind("<Return>", self.addItem)
+
         self.priceUpdate(0)
         self.startGUI()
+
+    def reaktivierenItem(self):
+        if self.tpItem.curselection():
+            item = self.controller.cGetItem(self.tpItem.get((self.tpItem.curselection())))
+            item.setNochmal(True)
 
     def readItem(self, pIndex = 0): #Lese Items aus dem Speicher
         temp = self.controller.cReadItem()
 
         if temp and pIndex + 1 <= len(temp): #Items werden der Reihe nach geladen
             i = list(temp)[pIndex]
-            self.addDataItem(i, temp[i]["Preis"], temp[i]["Version"], temp[i]["Operator"])
+            self.addDataItem(i, temp[i]["Preis"], temp[i]["Version"], temp[i]["Operator"], temp[i]["Mehrmals"])
 
             self.main.after(10, self.readItem, pIndex + 1)
 
@@ -153,12 +165,12 @@ class GW2GUI:
             self.tpItem.delete(self.tpItem.curselection())
             self.controller.cRemoveItemL(item)
 
-    def addDataItem(self, pItem: str, pPreis: int, pVersion: str, pOperator: str): #Item aus dem Speicher der GUI hinzufügen
+    def addDataItem(self, pItem: str, pPreis: int, pVersion: str, pOperator: str, pAnzahl): #Item aus dem Speicher der GUI hinzufügen
         self.tpItem.insert("end", pItem)
         self.itemUIP.append(pItem)
-        self.controller.cSetItemL(pItem, pPreis, pVersion, pOperator)
+        self.controller.cSetItemL(pItem, pPreis, pVersion, pOperator, pAnzahl)
 
-    def addItem(self): #Item der Listbox hinzufügen
+    def addItem(self, event = None): #Item der Listbox hinzufügen
         item = self.tpEntry.get()
 
         if len(item) != 0 and self.goldEntry.get() and self.silberEntry.get() and self.bronzeEntry.get() and\
@@ -168,7 +180,8 @@ class GW2GUI:
                                                  int(self.bronzeEntry.get()))
             version = "Buy" if self.v.get() == 1 else "Sell"
             op = "Größer" if self.g.get() == 1 else "Kleiner"
-            self.controller.cSetItemL(item, preis, version, op)
+            nochmal = False if self.a.get() == 1 else True
+            self.controller.cSetItemL(item, preis, version, op, nochmal)
             self.itemUIP.append(item)
 
         self.tpEntry.delete(0, "end")
@@ -177,9 +190,9 @@ class GW2GUI:
         try:
             if self.tpItem.curselection():
                 item = self.controller.cGetItem(self.tpItem.get((self.tpItem.curselection())))
-                currency = self.controller.cConvertCtoG(item["Preis"])
-                order = item["Version"]
-                operator = item["Operator"]
+                currency = self.controller.cConvertCtoG(item.getPreis())
+                order = item.getVersion()
+                operator = item.getOP()
                 self.b.set("{} Gold {} Silber {} Bronze \nOrder: {} \nOperator: {}".format(currency[0], currency[1],
                                                                                            currency[2], order, operator))
             else:
@@ -202,14 +215,16 @@ class GW2GUI:
             pIndex = 0
         try:
             item = self.controller.cGetItem(self.itemUIP[pIndex])
-            version = item["Version"]
-            preisTP = self.controller.cGetPreise(item["Name"], version)
-            preisItem = item["Preis"]
-            op = item["Operator"]
-            if pIndex + 1 <= len(self.itemUIP) and preisItem <= preisTP and op == "Größer":
-                self.controller.cNoti(item["Name"], preisItem, version, op)
-            elif pIndex + 1 <= len(self.itemUIP) and preisItem >= preisTP and op == "Kleiner":
-                self.controller.cNoti(item["Name"], preisItem, version, op)
+            version = item.getVersion()
+            preisTP = self.controller.cGetPreise(item.getName(), version)
+            preisItem = item.getPreis()
+            op = item.getOP()
+            if pIndex + 1 <= len(self.itemUIP) and (preisItem <= preisTP and op == "Größer")\
+            or (preisItem >= preisTP and op == "Kleiner") and item.getNochmal():
+                self.controller.cNoti(item.getName(), preisItem, version, op)
+                if not item.getMehrmals():
+                    item.setNochmal(False)
+                print(item.getName())
         except (WrongStatus, IndexError, TypeError) as e:
             pass
 

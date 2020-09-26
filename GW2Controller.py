@@ -29,8 +29,8 @@ class Controller:
         pVersion = pVersion.lower() + "s"
         return self.tp.getPreis(pItem, pVersion)
 
-    def cSetItemL(self, pItem, pPreis, pVersion, pOperator):
-        self.tp.setItemL(pItem, pPreis, pVersion, pOperator)
+    def cSetItemL(self, pItem, pPreis, pVersion, pOperator, pAnzahl):
+        self.tp.setItemL(pItem, pPreis, pVersion, pOperator, pAnzahl)
 
     def cRemoveItemL(self, pItem: str):
         self.tp.removeItemL(pItem)

@@ -1,10 +1,18 @@
 {
   "Mystic Coin": {
     "Name": "Mystic Coin",
-    "Preis": 15900,
+    "Preis": 15000,
+    "Version": "Buy",
+    "Operator": "Gr\u00f6\u00dfer",
+    "Id": "19976",
+    "Mehrmals": true
+  },
+  "Bolt": {
+    "Name": "Bolt",
+    "Preis": 23990000,
     "Version": "Buy",
     "Operator": "Kleiner",
-    "Id": "19976",
+    "Id": "30699",
     "Mehrmals": false
   }
 }
