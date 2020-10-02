@@ -5,7 +5,7 @@ class GW2Json:
     def __init__(self):
         pass
 
-    @staticmethod #{'Mystic Coin': <GW2Item.GW2Item object at 0x052B6250>, 'Bolt': <GW2Item.GW2Item object at 0x076531F0>}
+    @staticmethod
     def jsonCreate(pItemL: dict):
         data = {}
 

@@ -154,7 +154,7 @@ class GW2GUI:
             self.a.set(2)
             self.updateOption["values"] = ["1 min", "2 min", "3 min", "4 min", "5 min"]
             self.delayOption["values"] = ["25 sec", "20 sec", "15 sec", "10 sec"]
-            self.u.set("1 min")
+            self.u.set("2 min")
             self.d.set("20 sec")
             self.boxUpdate()
 
@@ -195,12 +195,17 @@ class GW2GUI:
                 operator = item.getOP()
                 self.b.set("{} Gold {} Silber {} Bronze \nOrder: {} \nOperator: {}".format(currency[0], currency[1],
                                                                                            currency[2], order, operator))
+                if not item.getNochmal(): #Ignore this pls
+                    self.reaktButton.config(state = "normal")
+                else:
+                    self.reaktButton.config(state="disabled")
             else:
+                self.reaktButton.config(state="disabled")
                 self.b.set("")
         except (ValueError, KeyError) as e:
             pass
 
-        self.main.after(400, self.boxUpdate)
+        self.main.after(350, self.boxUpdate)
 
     def priceLoop(self, pIndex: int): #ForLoop Alternative für priceUpdate()
         time = self.updateOption.current() + 1
@@ -224,7 +229,6 @@ class GW2GUI:
                 self.controller.cNoti(item.getName(), preisItem, version, op)
                 if not item.getMehrmals():
                     item.setNochmal(False)
-                print(item.getName())
         except (WrongStatus, IndexError, TypeError) as e:
             pass
 
